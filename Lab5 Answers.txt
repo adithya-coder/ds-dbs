@@ -1,0 +1,75 @@
+
+BEGIN
+DBMS_OUTPUT.PUT_LINE('Blah blah blah');
+END;
+/
+
+
+DECLARE 
+    lol VARCHAR2(25) :='Laugh Out Loud!!!!';
+
+BEGIN
+ DBMS_OUTPUT.PUT_LINE(lol);
+END;
+
+
+
+--EG2
+
+CREATE TABLE Client(
+    name VARCHAR(15),
+    clno CHAR(3)
+)
+
+INSERT INTO Client VALUES('XXXX','c01')
+    
+
+DECLARE 
+    var_cname varchar(15);
+	var_clno char(3) :='c01';
+
+BEGIN 
+    SELECT c.name INTO var_cname
+	FROM Client c
+	WHERE c.clno = var_clno;
+
+	DBMS_OUTPUT.PUT_LINE('Name of the Client with clno :' || var_clno || ' is '|| var_cname);
+END;
+/
+
+
+
+--RECORDS
+
+
+
+
+--simple loop
+
+
+DECLARE 
+    i number :=10;
+BEGIN
+LOOP
+i:=i+1;
+    DBMS_OUTPUT.PUT_LINE(i);
+EXIT WHEN i>20;
+END LOOP;
+END;
+
+
+-- EXERCISE 3
+
+
+
+DECLARE x number :=9;
+BEGIN 
+LOOP
+ 	for y in 1..x loop
+    	DBMS_OUTPUT.PUT(x||' ');
+    END LOOP;
+DBMS_OUTPUT.PUT_LINE('');
+x:=x-1;
+EXIT WHEN x<1;
+END LOOP;
+END;

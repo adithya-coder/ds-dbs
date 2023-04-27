@@ -1,0 +1,127 @@
+
+
+create type dept;
+/
+
+create type emp as object( 
+	EMPNO CHAR(6), 
+  	FIRSTNAME VARCHAR(12), 
+  	LASTNAME VARCHAR(15), 
+  	WORKDEPT REF dept, 
+ 	SEX CHAR(1), 
+  	BIRTHDATE DATE, 
+  	SALARY NUMBER(8,2) 
+   
+)
+/
+
+create type dept as object( 
+    deptno char(3), 
+    deptname varchar(36), 
+    mgrno REF emp, 
+    admrdept REF dept 
+) 
+
+/
+
+Create table EmpTable of emp( 
+    Constraint ePK PRIMARY KEY(EMPNO) 
+);
+
+Create table DeptTable of dept( 
+    Constraint dPK Primary Key(deptno), 
+    Constraint dfk1 FOREIGN KEY(mgrno) References EmpTable, 
+    Constraint dfk2 FOREIGN KEY(admrdept) References DeptTable 
+) 
+;
+
+Alter table EmpTable add constraint efk FOREIGN KEY (WORKDEPT) references DeptTable 
+;
+
+insert into EmpTable Values ('000010','Christine','Haas',NULL,'F','14-AUG-53',72750) ;
+
+insert into EmpTable Values ('000020','Michael','Thompson',NULL,'M','02-FEB-68',61250) ;
+
+insert into EmpTable Values ('000030','Sally','KWAN',NULL,'F','11/MAY/71',58250) ;
+
+insert into EmpTable Values ('000060','IRVING','STERN',NULL,'M','07/JUL/65',55555) ;
+
+insert into EmpTable Values ('000070','EVA','PULASKI',NULL,'F','26/MAY/73',56170) ;
+
+insert into EmpTable Values ('000050','JOHN','GEYER',NULL,'M','15/SEP/55',60175) ;
+
+insert into EmpTable Values ('000090','EILEEN','HENDERSON',NULL,'F','15/MAY/61',49750) ;
+
+insert into EmpTable Values ('000100','THEODORE','SPENSER',NULL,'M','18/DEC/76',46150) ;
+
+select * from EmpTable;
+
+select * from EmpTable;
+
+
+
+Insert into DeptTable Values('A00','Spiffy Computer Service Div',(Select ref(e) from EmpTable e where FIRSTNAME='Christine'),NULL) 
+ 
+;
+
+Insert into DeptTable Values('B01','Planning',(Select ref(e) from EmpTable e where FIRSTNAME='Michael'),NULL) ;
+
+Insert into DeptTable Values('C01','Information Centre',(Select ref(e) from EmpTable e where FIRSTNAME='Sally'),NULL) ;
+
+Insert into DeptTable Values('D01','Development Centre',(Select ref(e) from EmpTable e where FIRSTNAME='IRVING'),NULL) ;
+
+Update EmpTable set WORKDEPT=(SELECT REF(w) from DeptTable w where w.Deptname='Spiffy Computer Service Div') where firstname='Christine' ;
+
+select * from Emptable where firstname='Christine';
+
+desc emptable 
+
+
+desc depttable
+
+
+Update EmpTable set WORKDEPT=(SELECT REF(w) from DeptTable w where w.Deptname='Planning') where firstname='Michael' ;
+
+Update EmpTable set WORKDEPT=(SELECT REF(w) from DeptTable w where w.Deptname='Information Centre') where firstname='Sally' ;
+
+
+Update EmpTable set WORKDEPT=(SELECT REF(w) from DeptTable w where w.Deptname='Development Centre') where firstname='IRVING' ;
+
+Update EmpTable set WORKDEPT=(SELECT REF(w) from DeptTable w where w.Deptname='Development Centre') where firstname='EVA' ;
+
+Update EmpTable set WORKDEPT=(SELECT REF(w) from DeptTable w where w.Deptname='Information Centre') where firstname='JOHN' ;
+
+Update EmpTable set WORKDEPT=(SELECT REF(w) from DeptTable w where w.Deptname='Planning') where firstname='THEODORE' ;
+
+Update EmpTable set WORKDEPT=(SELECT REF(w) from DeptTable w where w.Deptname='Planning') where firstname='EILEEN' ;
+
+Update DeptTable set admrdept=(Select Ref(w) from DeptTable w where w.Deptno='A00') where deptno='A00'
+    /
+Update DeptTable set admrdept=(Select Ref(w) from DeptTable w where w.Deptno='A00') where deptno='B01'
+    /
+Update DeptTable set admrdept=(Select Ref(w) from DeptTable w where w.Deptno='A00') where deptno='C01'
+    /
+Update DeptTable set admrdept=(Select Ref(w) from DeptTable w where w.Deptno='C01') where deptno='D01'
+    /
+
+
+
+"Queries Q2"
+
+    
+select d.mgrno.lastname,d.deptname from depttable d
+
+select e.empno,e.lastname,e.workdept.deptname from emptable e
+
+select d.deptno,d.deptname,d.admrdept.deptname from depttable d
+
+select d.deptno,d.deptname,d.admrdept.deptname, d.admrdept.mgrno.lastname from depttable d
+
+select e.empno,e.firstname,e.lastname,e.salary,e.workdept.mgrno.lastname,e.workdept.mgrno.salary from emptable e
+
+
+select e.sex,e.workdept.deptname,e.workdept.deptno,AVG(e.salary) from emptable e group by e.sex,e.workdept.deptname,e.workdept.deptno
+
+
+
+

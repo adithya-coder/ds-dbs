@@ -1,0 +1,90 @@
+select * from tab
+
+create type CityArr as varray(3) of varchar(20);
+/
+create type company_t as object(
+    companyName varchar(10),
+    cPrice float,
+    exchanges CityArr,
+    lastDiv float,
+    eps float
+)
+/
+create type investments as object(
+    compName REF company_t,
+    purchase number(6,2),
+    iDate date,
+    qty number
+)
+/
+create type investmentTable as table of investments;
+
+/
+create type address_t as object(
+    street varchar(5),
+    street_name VARCHAR(20),
+    suburb varchar(20),
+    state varchar(10),
+    pin char(4)
+)
+/
+
+create type client_t as object(
+    clno char(3),
+	name varchar(12),
+  	address address_t,
+    clientinvest investmentTable
+)
+/
+create table newClient of client_t(
+    CONSTRAINT cliPK PRIMARY KEY(clno)
+)
+nested table clientinvest store as clientInvestTable
+/
+create table stocksTable of company_t(
+    CONSTRAINT stPK PRIMARY KEY (companyName)
+)
+
+/
+Insert into stocksTable VALUES('BHP',10.50,CityArr('Sydney','New York'),1.50,3.20)
+/
+
+Insert into stocksTable VALUES('IBM',70.00,CityArr('New York','London','Tokyo'),4.25,10.00)
+/
+Insert into stocksTable VALUES('INTEL',76.50,CityArr('New York','London'),5.00,12.40)
+/
+Insert into stocksTable VALUES('FORD',40.00,CityArr('New York'),2.00,8.50)
+/
+Insert into stocksTable VALUES('GM',60.00,CityArr('New York'),2.50,9.20)
+/
+Insert into stocksTable VALUES('INFOSYS',45.50,CityArr('New York'),3.00,7.80)
+/
+
+
+Insert into newClient VALUES('c01','John Smith',address_t('3','East Av','Bentley','W A','6102'),
+    investmentTable(investments((select ref(e) from stocksTable e where e.companyName='BHP'),12.00,'02-OCT-01',1000),
+    investments((select ref(e) from stocksTable e where e.companyName='BHP'),10.50,'08-JUNE-02',2000),
+    investments((select ref(e) from stocksTable e where e.companyName='IBM'),58.00,'12-FEB-00',500),
+    investments((select ref(e) from stocksTable e where e.companyName='IBM'),65.00,'10-APRIL-01',1200),
+    investments((select ref(e) from stocksTable e where e.companyName='INFOSYS'),64.00,'11-AUG-01',1000)))
+/
+
+Insert into newClient VALUES('c02','Jill Brody',address_t('42','Bent St','Perth','W A','6001'),
+    investmentTable(investments((select ref(e) from stocksTable e where e.companyName='INETL'),35.00,'30-JAN-00',300),
+    investments((select ref(e) from stocksTable e where e.companyName='INTEL'),54.00,'30-JAN-01',400),
+    investments((select ref(e) from stocksTable e where e.companyName='INTEL'),60.00,'02-OCT-01',200),
+    investments((select ref(e) from stocksTable e where e.companyName='FORD'),40.00,'05-OCT-99',300),
+    investments((select ref(e) from stocksTable e where e.companyName='GM'),55.50,'12-DEC-00',500)))
+/
+
+
+select * from tab
+
+
+
+select n.name,t.compName.companyName
+from newClient n,TABLE(select clientinvest 
+    					from newClient ) t
+
+
+

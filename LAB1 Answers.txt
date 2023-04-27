@@ -1,0 +1,156 @@
+Create table Client (
+  clno char(3),
+  name varchar(12),
+  address varchar(30),
+  Constraint cPK Primary key(clno)
+)
+/
+
+DESC Client
+
+
+Create table Stock (
+  company char(7),
+  price number(6,2),
+  dividend number(4,2),
+  eps number(4,2),
+  Constraint sPK Primary key(company)
+)
+/
+
+DESC Stock
+
+Create table Trading (
+  company char(7),
+  exchange varchar(12),
+  Constraint tPK Primary key(company,exchange),
+  Constraint tfk Foreign key(company) references Stock(company)
+)
+/
+
+DESC Trading
+
+
+Create table Purchase (
+  clno char(3),
+  company char(7),
+  pdate date,
+  qty number(6),
+  price number(6,2),
+  Constraint pPK Primary key(clno,company,pdate),
+  Constraint pfk Foreign key(company) references Stock(company),
+  COnstraint pfk2 Foreign key(clno) references Client(clno)
+)
+/
+
+DESC Purchase
+
+
+
+
+Insert into Client VALUES('c01','John Smith','3 East Av Bentley WA 6102')
+  /
+Insert into Client VALUES('c02','Jill Brody','42 Bent St Perth WA 6001')
+  /
+
+
+Insert into Stock VALUES('BHP',10.50,1.50,3.20)
+/
+Insert into Stock VALUES('IBM',70.00,4.25,10.00)
+  /
+Insert into Stock VALUES('INTEL',76.50,5.00,12.40)
+  /
+Insert into Stock VALUES('FORD',40.00,2.00,8.50)
+  /
+Insert into Stock VALUES('GM',60.00,2.50,9.20)
+  /
+Insert into Stock VALUES('INFOSYS',45.00,3.00,7.80)
+/
+
+
+
+
+Insert into Trading VALUES('BHP','Sydney')
+/
+  Insert into Trading VALUES('BHP','New York')
+/
+Insert into Trading VALUES('IBM','Sydney')
+  /
+Insert into Trading VALUES('IBM','New York')
+  /
+  Insert into Trading VALUES('IBM','Tokyo')
+  /
+Insert into Trading VALUES('INTEL','New York')
+  /
+Insert into Trading VALUES('INTEL','London')
+  /
+Insert into Trading VALUES('FORD','New York')
+  /
+Insert into Trading VALUES('GM','New York')
+/
+Insert into Trading VALUES('INFOSYS','New York')
+/
+
+
+
+
+Insert into Purchase VALUES('c01','BHP','02-OCT-01',1000,12.00)
+/
+Insert into Purchase VALUES('c01','BHP','08-JUNE-02',2000,10.50)
+/
+Insert into Purchase VALUES('c01','IBM','12-FEB-00',500,58.00)
+/
+Insert into Purchase VALUES('c01','IBM','10-APRIL-01',1200,65.00)
+/
+Insert into Purchase VALUES('c01','INFOSYS','11-AUG-01',1000,64.00)
+/
+
+
+
+Insert into Purchase VALUES('c02','INTEL','30-JAN-00',300,35.00)
+/
+Insert into Purchase VALUES('c02','INTEL','30-JAN-01',400,54.00)
+/
+Insert into Purchase VALUES('c02','INTEL','02-OCT-01',200,60.00)
+/
+Insert into Purchase VALUES('c02','FORD','05-OCT-99',300,40.00)
+/
+Insert into Purchase VALUES('c02','GM','12-DEC-00',500,55.50)
+/
+
+
+
+Select c.name,s.company,s.price,s.dividend,s.eps,SUM(p.price*p.qty)
+From Client c, Stock s, Purchase p
+where c.clno=p.clno and p.company=s.company
+Group by c.name,s.company,s.price,s.dividend,s.eps
+
+/
+
+
+select c.name,p.company,SUM(p.qty),SUM(p.qty*p.price)/SUM(p.qty)
+from Client c,Purchase p
+where c.clno=p.clno
+Group by c.name,p.company
+/
+
+
+
+select s.company,c.name,SUM(p.qty),SUM(p.qty*s.price)
+from Client c, Trading t, Stock s,Purchase p
+where c.clno=p.clno and s.company=t.company and s.company=p.company and t.exchange='New York'
+group by s.company,c.name
+/
+
+
+select c.name, SUM(p.price*p.qty)
+from Client c,Purchase p
+where c.clno=p.clno
+group by c.name
+/
+
+
+select c.name,SUM(p.qty*s.price)-SUM(p.price*p.qty)
+from Client c, Purchase p, Stock s
+Where c.clno=p.clno and s.company=p.company
+group by c.name
