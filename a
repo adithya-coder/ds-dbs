@@ -1,0 +1,332 @@
+
+
+
+-- Tute 05 PL/SQL
+-- PL/SQL Statement Structure
+
+DECLARE
+    /*This is a multiline comment 
+    its like java. So its easy . 
+    He He
+    */
+BEGIN -- This is a single Line Comment
+	NULL;
+END;
+
+-- First PL/SQL Statement
+DECLARE
+    --data dbms_output.chararr;
+	--num_lines number;
+BEGIN
+	--DBMS_OUTPUT.ENABLE;
+    
+   	DBMS_OUTPUT.PUT_LINE('Hello World');
+	DBMS_OUTPUT.PUT('THUS IS PUT');
+
+	--num_lines := 3;
+	--DBMS_OUTPUT.GET_LINES(data, num_lines);
+END;
+/
+
+-- PlaceHolders (Declearing Variables)
+
+DECLARE
+    salary number not null := 50;
+	price number := 12;
+	name varchar2(10) := 'Aruna';
+
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(salary);
+	DBMS_OUTPUT.PUT_LINE(price);
+	DBMS_OUTPUT.PUT_LINE(name);
+END;
+
+create table client(
+    name varchar2(10),
+    salary number,
+	price number
+)
+/
+
+insert into client values('Aruna',200,500);
+insert into client values('wasantha', 500,250);
+
+
+-- How to use variables
+
+DECLARE
+    name varchar2(10) := 'Kumara';
+	price1 number := 250;
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('BEFORE assigning variables, name is : ' || name);
+        select c.name INTO name
+        from client c
+        where c.price = price1;
+	-- || means concatonate
+	DBMS_OUTPUT.PUT_LINE('The name of the cleint is : ' || name || ' the price was : ' || price1);  
+END;
+
+create table stocks(
+    company varchar2(5),
+    current_price number(4,2),
+    exchanges varchar2(10),
+    last_divident number,
+	earnings number
+)
+
+insert into stocks values('BHP',10.50,'NYC',1.50,3.20);
+insert into stocks values('IBM',70.00,'LONDON',3.50,3.20);
+insert into stocks values('INTEL',76.50,'CMB',2.50,3.20);
+insert into stocks values('FORD',40.00,'KND',5.50,3.20);
+
+DECLARE
+    IBM number;
+BEGIN
+    select s.current_price into IBM
+    from stocks s
+    where company = 'IBM';
+
+	DBMS_OUTPUT.PUT_LINE(IBM);
+END;
+
+
+-- Scope of Variables
+
+-- Local variables - Declared in the inner block and cannot be referenced by the outer. 
+-- Global Variables - Declared in the outer block and can be referenced by itslef and by its inner bloacks.
+
+DECLARE
+    -- GLOBAL VARIABLES
+    G_NUM_1 number;
+	G_NUM_2 number;
+BEGIN
+    G_NUM_1 := 100;
+	G_NUM_2 := 10;
+
+	DECLARE
+        L_NUM_1 number;
+    BEGIN
+        L_NUM_1 := G_NUM_1 * G_NUM_2;
+		DBMS_OUTPUT.PUT_LINE(L_NUM_1);
+    END;
+DBMS_OUTPUT.PUT_LINE(L_NUM_1);
+END;
+
+
+-- Constants
+-- final variables cannot change
+
+DECLARE
+    const_val CONSTANT number := 100; -- This number cannot be changed.
+	val number := 10;
+BEGIN
+    val := const_val * val;
+	DBMS_OUTPUT.PUT_LINE(val);
+	--const_val := 200;
+END;
+
+
+-- Records
+
+DECLARE
+TYPE client_type is record(
+    name varchar2(20),
+    salary number,
+    price number
+);
+
+--client_rec client_type;
+-- or
+client_rec client%ROWTYPE; --  IF type is equal to a table
+BEGIN 
+    select * into client_rec
+    from client c
+    where c.price = 250;
+    
+	DBMS_OUTPUT.PUT_LINE(client_rec.name);
+	DBMS_OUTPUT.PUT_LINE(client_rec.salary);
+	DBMS_OUTPUT.PUT_LINE(client_rec.price);
+END;
+
+-- Conditional Statements 
+
+DECLARE
+BEGIN
+    if FALSE THEN
+    	DBMS_OUTPUT.PUT_LINE('IF');
+	ELSE
+        DBMS_OUTPUT.PUT_LINE('ELSE');
+	END IF;
+END;
+
+--------------------------
+
+DECLARE
+    A number := -1;
+BEGIN
+    IF A<0 THEN
+    	DBMS_OUTPUT.PUT_LINE('A is less than 0');
+	ELSIF A=0 THEN
+        DBMS_OUTPUT.PUT_LINE('A is equals to 0');
+	ELSE 
+        DBMS_OUTPUT.PUT_LINE('A greater than 0');
+	END IF;
+END;
+
+-------------------------------
+
+DECLARE
+    B number := 3;
+BEGIN
+    IF B<5 THEN
+    	IF B>0 THEN
+    		DBMS_OUTPUT.PUT_LINE('A is less than 0 greater than 5');
+		END IF;
+    ELSIF B > 5 THEN
+        DBMS_OUTPUT.PUT_LINE('A Greater than 5');
+	END IF;
+END;
+
+
+
+
+--- Exercise 
+select * from stocks;
+
+DECLARE
+    company varchar2(10) := 'IBM';
+	curr_price number;
+BEGIN 
+    select st.current_price into curr_price
+    from stocks st
+    where st.company = 'IBM';
+	
+	IF 75 <= curr_price then
+		DBMS_OUTPUT.PUT_LINE('Current Price is high !');
+    ELSIF 65 <= curr_price AND curr_price < 75 Then
+        DBMS_OUTPUT.PUT_LINE('Current Price is medium high !');
+    ELSIF 55 <= curr_price AND curr_price < 65 Then
+        DBMS_OUTPUT.PUT_LINE('Current Price is medium !');
+    ELSIF 45 <= curr_price AND curr_price < 55 Then
+        DBMS_OUTPUT.PUT_LINE('Current Price is low');
+	else
+        DBMS_OUTPUT.PUT_LINE('Current Price is very low !');
+	end if;
+
+DBMS_OUTPUT.PUT_LINE(curr_price);
+END;
+
+-----------------------------  LOOPS
+
+
+------------- Simple loop (Run atleast once) DO-While
+DECLARE
+	i number := 0;
+BEGIN
+    LOOP
+    	DBMS_OUTPUT.PUT_LINE(i);	
+		if i >= 10 then
+            EXIT;
+		end if;
+	i := i+1;
+	end loop;
+END;
+
+-----------------------------
+
+DECLARE 
+	x number := 0;
+BEGIN
+    LOOP
+    	DBMS_OUTPUT.PUT_LINE( 'Itherator : ' || x);
+		x := x+1;
+		EXIT WHEN x > 10;
+	end loop;
+END;
+
+
+---------------------- While loop (Check the condition at the beginig of the Loop)
+
+DECLARE
+	ii number := 0;
+BEGIN
+    WHILE ii <= 10 LOOP
+		DBMS_OUTPUT.PUT_LINE(ii);
+		ii := ii+1;
+	END LOOP;
+END;
+
+---------------------- For LOOP (Run a loop for a predetermined # of times)
+
+DECLARE 
+BEGIN
+    for c in  1..50 loop
+    	--insert into client values('loop',1,c);
+    	DBMS_OUTPUT.PUT_LINE(c);
+	end loop;
+END;
+
+------------ GO backwards
+
+DECLARE 
+BEGIN
+    for c in reverse 1..50 loop
+    	DBMS_OUTPUT.PUT_LINE(c);
+	end loop;
+END;
+
+
+-------Labels
+
+BEGIN
+	<<i_loop>> for i in 1..10 loop
+    	<<j_loop>> for j in 1..10 loop
+    		dbms_output.put_line(to_char(j, '999'));
+			exit j_loop when j = i;
+		end loop;
+		--dbms_output.new_line;
+	end loop;
+END;
+/
+
+
+-------------------- for and while
+DECLARE
+    w number := 0;
+BEGIN
+    FOR i in reverse 1..9 loop
+    	w := i;
+    	while w > 0 loop 
+    		DBMS_OUTPUT.PUT(i || ' ');
+			w := w-1;
+		end loop;
+		DBMS_OUTPUT.PUT_LINE('');
+    end loop;
+END;
+
+------------------- for and simple
+
+DECLARE
+    w number := 0;
+BEGIN
+    FOR i in reverse 1..9 loop
+    	w := i;
+        	loop 
+        		DBMS_OUTPUT.PUT(i || ' ');
+    			w := w-1;
+    		exit when w = 0;
+    		end loop;
+		DBMS_OUTPUT.PUT_LINE('');
+    end loop;
+END;
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------- CURSORS
